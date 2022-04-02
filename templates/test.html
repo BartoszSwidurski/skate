@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Flask SocketIO Test</title>
+  </head>
+  <body>
+    <p>Anacall</p>
+
+    <form action="/test" method="POST" enctype="multipart/form-data">
+      <input type="file" name="file" />
+      <input type="submit" />
+    </form>
+
+    <br />
+    <p id="status">Status</p>
+
+    <script
+      type="text/javascript"
+      src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"
+    ></script>
+    <script type="text/javascript" charset="utf-8">
+      var socket = io.connect(
+        "http://" + document.domain + ":" + location.port
+      );
+
+      socket.on("connect", function () {
+        socket.emit("get_status");
+        console.log("Websocket connected!");
+      });
+
+      socket.on("response_status", function () {
+        document.getElementById("status").innerHTML = "Status : File Status";
+        console.log("response received");
+      });
+    </script>
+  </body>
+</html>
