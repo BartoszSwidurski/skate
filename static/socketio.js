@@ -6,6 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
     joinRoom(room);
 
 
+    document.querySelector('#send-video').onclick = () => {
+        socket.emit('send_vid')
+    }
+
+    socket.on('video_name', data => {
+        const src = "Videos/" + data.filename;
+        const video = document.createElement('video');
+        video.setAttribute("src", src);
+        video.setAttribute("width", "320");
+        video.setAttribute("height", "240");
+        video.setAttribute("controls", "controls");
+        document.querySelector('#display-section').append(video);
+    })
+
     socket.on('incoming-message', data => {
         const table = document.getElementById('#table');
         const tr = document.createElement('tr');

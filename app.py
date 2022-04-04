@@ -4,6 +4,7 @@ from flask_login import LoginManager, login_user, current_user, login_required, 
 from models import *
 from wtform_fields import *
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
+from werkzeug.utils import secure_filename
 import os
 
 app = Flask(__name__)
@@ -30,16 +31,18 @@ def upload_file():
         if 'file' not in request.files:
             return 'No file selected'
         file = request.files['file']
+        
         if file.filename == '':
             return "No file selected"
         print('test')
+        filename = secure_filename(file.filename)
         if os.path.exists('Videos'):
             print('exists')
-            file.save("Videos/file.jpg")
+            file.save("Videos/" + filename)
         else:
             print('not exists')
             os.makedirs('Videos')
-            file.save("Videos/file.jpg")
+            file.save("Videos/" + filename)
         
           # saves in current directory
         print('test2')
@@ -107,6 +110,28 @@ def create_room(data):
         emit('new-room-received', data, broadcast=True)
     
 
+@socketio.on('send_vid')
+def send_vid():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return 'No file selected'
+        file = request.files['file']
+        
+        if file.filename == '':
+            return "No file selected"
+        print('test')
+        # filename = secure_filename(file.filename)
+        if os.path.exists('Videos'):
+            print('exists')
+            file.save("Videos/720.mp4")
+        else:
+            print('not exists')
+            os.makedirs('Videos')
+            file.save("Videos/720.mp4")
+        
+          # saves in current directory
+        print('test2')
+        emit('video_name', {'filename': '720.mp4'})
 
 @socketio.on('incoming-message')
 def message(data):
