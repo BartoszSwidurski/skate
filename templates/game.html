@@ -1,63 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GAME of SKATE</title>
     <script
-    src="https://code.jquery.com/jquery-3.6.0.js"
-    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-    crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+      src="https://code.jquery.com/jquery-3.6.0.js"
+      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
     <!-- navbar -->
 
+    <div id="main-section">
+      <!-- room selection -->
+      <nav id="sidebar">
+        <h2>{{username}}</h2>
+        <h4>ROOMS:</h4>
+        <button id="create-room">CREATE ROOM</button>
+        {% for room in rooms %}
+        <p class="select-room">{{ room }}</p>
 
-    <div id="main-section" >
-
-        <!-- room selection -->
-        <nav id="sidebar" >
-            <h2>{{username}}</h2>
-            <h4>ROOMS:</h4>
-            <button id="create-room">CREATE ROOM</button>
-            {% for room in rooms %}
-            <p class="select-room">{{ room }}</p>
-            
-            {% endfor %}
-            
-        </nav>
-        ___________________________
-        <br/>
-        <!-- message area  -->
-        <div id="rightside-panel">
-            <!-- display message area  -->
-            <br/>
-            <div id="display-section" style="height: 500px; width: 500px; border-style: solid;">
-                <table id="table">
-
-                </table>
-            </div>
-            <!-- input area  -->
-            {% if room != 'Lounge' %}
-            <div id="input-area">
-                <input type="text" id="user_input" placeholder="Wpisz cos" autocomplete="off">
-                <button type="button" id="send_message"> SEND </button>
-            </div>
-
-            {% endif %}
-
+        {% endfor %}
+      </nav>
+      ___________________________
+      <br />
+      <!-- message area  -->
+      <div id="rightside-panel">
+        <!-- display message area  -->
+        <br />
+        <div
+          id="display-section"
+          style="height: 500px; width: 500px; border-style: solid"
+        >
+          <table id="table"></table>
+        </div>
+        <!-- input area  -->
+        {% if room != 'Lounge' %}
+        <div id="input-area">
+          <input
+            type="text"
+            id="user_input"
+            placeholder="Wpisz cos"
+            autocomplete="off"
+          />
+          <button type="button" id="send_message">SEND</button>
         </div>
 
+        {% endif %}
+      </div>
+
+      <div>
+        <form method="post" action="" enctype="multipart/form-data" id="myform">
+          <div>
+            <input type="file" id="file" name="file" />
+            <input
+              type="button"
+              class="button"
+              value="Upload"
+              id="but_upload"
+            />
+          </div>
+        </form>
+      </div>
     </div>
 
+    <div id="uploaded_file_div"></div>
+
     <script type="text/javascript">
-        const username = `{{ username }}`;
+      const username = `{{ username }}`;
+
+      //   $(document).ready(function () {
+      //     $("#but_upload").click(function () {
+      //       var fd = new FormData();
+      //       var files = $("#file")[0].files[0];
+      //       fd.append("file", files);
+      //       $.ajax({
+      //         url: "upload",
+      //         type: "post",
+      //         data: fd,
+      //         contentType: false,
+      //         processData: false,
+      //         success: function (response) {
+      //           if (response != 0) {
+      //             console.log("response", response);
+      //             socket.emit("file_posted", response);
+      //           } else {
+      //             alert("file not uploaded");
+      //           }
+      //         },
+      //       });
+      //     });
+
+      //     socket.on("file_received", (filePath) => {
+      //       console.log("socket file path ", filePath);
+
+      //       //TU REQUEST DO POBIERANIA FILMIKU
+
+      //       // const src = "Videos/" + data.filename;
+      //       // const video = document.createElement("video");
+      //       // video.setAttribute("src", src);
+      //       // video.setAttribute("width", "320");
+      //       // video.setAttribute("height", "240");
+      //       // video.setAttribute("controls", "controls");
+      //       // document.querySelector("#display-section").append(video);
+      //     });
+      //   });
     </script>
 
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='socketio.js') }}"></script>
-</body>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
+    <script src="{{ url_for('static', filename='socketio.js') }}"></script>
+  </body>
 </html>

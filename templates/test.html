@@ -7,10 +7,16 @@
   <body>
     <p>Anacall</p>
 
-    <form action="/test" method="POST" enctype="multipart/form-data">
-      <input type="file" name="file" />
-      <input type="submit" />
-    </form>
+    <div>
+      <form method="post" action="" enctype="multipart/form-data" id="myform">
+        <div>
+          <input type="file" id="file" name="file" />
+          <input type="button" class="button" value="Upload" id="but_upload" />
+        </div>
+      </form>
+    </div>
+
+    <button id="testt">test</button>
 
     <br />
     <p id="status">Status</p>
@@ -20,19 +26,55 @@
       src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"
     ></script>
     <script type="text/javascript" charset="utf-8">
-      var socket = io.connect(
-        "http://" + document.domain + ":" + location.port
-      );
+      $(document).ready(function () {
+        var sock = io();
+        $("#but_upload").click(function () {
+          var fd = new FormData();
+          var files = $("#file")[0].files[0];
+          fd.append("file", files);
 
-      socket.on("connect", function () {
-        socket.emit("get_status");
-        console.log("Websocket connected!");
-      });
+          $.ajax({
+            url: "upload",
+            type: "post",
+            data: fd,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+              if (response != 0) {
+                console.log("dfsdfsdfsdfsd");
+                console.log("response", response);
+                alert("file uploaded");
 
-      socket.on("response_status", function () {
-        document.getElementById("status").innerHTML = "Status : File Status";
-        console.log("response received");
+                sock.emit("file_posted", response);
+              } else {
+                alert("file not uploaded");
+              }
+            },
+          });
+        });
+
+        sock.on("file_received", (filePath) => {
+          console.log("socket file path ", filePath);
+
+          //TU REQUEST DO POBIERANIA FILMIKU
+
+          // const src = "Videos/" + data.filename;
+          // const video = document.createElement("video");
+          // video.setAttribute("src", src);
+          // video.setAttribute("width", "320");
+          // video.setAttribute("height", "240");
+          // video.setAttribute("controls", "controls");
+          // document.querySelector("#display-section").append(video);
+        });
       });
     </script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
+
+    
   </body>
 </html>

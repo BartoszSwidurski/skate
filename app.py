@@ -1,5 +1,5 @@
 from time import localtime, strftime
-from flask import Flask, redirect, render_template, url_for, flash, request
+from flask import Flask, redirect, render_template, url_for, flash, request, send_from_directory
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from models import *
 from wtform_fields import *
@@ -24,7 +24,7 @@ def load_user(id):
 
     return User.query.get(int(id))
 
-@app.route('/test', methods=['GET', 'POST'])
+@app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -32,19 +32,20 @@ def upload_file():
         file = request.files['file']
         if file.filename == '':
             return "No file selected"
-        print('test')
-        if os.path.exists('Videos'):
-            print('exists')
-            file.save("Videos/file.jpg")
-        else:
-            print('not exists')
-            os.makedirs('Videos')
-            file.save("Videos/file.jpg")
-        
+        if file:
+            if os.path.exists('Videos'):
+                file.save("Videos/" + file.filename)
+            else:
+                os.makedirs('Videos')
+            file.save("Videos/" + file.filename)
           # saves in current directory
-        print('test2')
         status = "File uploaded"
-    return render_template('test.html')
+        return (file.filename, 200)
+    else: return render_template('test.html')
+
+@socketio.on('file_posted')
+def send_status(filePath):
+    emit("file_received", filePath)
 
 @app.route("/", methods=['GET','POST'])
 def index():
@@ -78,6 +79,17 @@ def login():
         return redirect(url_for('game'))
 
     return render_template("login.html", form=login_form)
+
+@app.route("/getVideo", methods=['GET'])
+def get_files():
+    try:
+        sp = os.path.join(app.root_path) 
+        filePath = request.args.get('filePath')
+        print('----------------------------')
+        print(sp + filePath)
+        return send_from_directory(sp + '\\Videos\\', filePath)
+    except FileNotFoundError:
+        abort(404)
 
 @app.route("/game", methods=['GET','POST'])
 def game():
